@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>docsis-watch</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div id="demo-banner" hidden>DEMO — synthetic data. Nothing here is a measurement, and exports are disabled.</div>
+
+<header>
+  <div class="brand">docsis-watch <span id="uptime" class="muted"></span></div>
+  <div id="health" class="health"></div>
+</header>
+
+<main>
+  <section class="mark">
+    <button id="problem-now" class="big">Problem now</button>
+    <form id="ann-form" hidden>
+      <div class="chips" id="cats">
+        <label><input type="radio" name="category" value="video_freeze" checked> video froze</label>
+        <label><input type="radio" name="category" value="audio_dropout"> audio dropped</label>
+        <label><input type="radio" name="category" value="robot_voice"> robot voice</label>
+        <label><input type="radio" name="category" value="call_dropped"> call dropped</label>
+        <label><input type="radio" name="category" value="slow_web"> websites slow</label>
+        <label><input type="radio" name="category" value="total_outage"> no internet</label>
+        <label><input type="radio" name="category" value="other"> other</label>
+      </div>
+      <div class="row">
+        <label>started <select name="ago_s"><option value="0">just now</option><option value="15">15s ago</option><option value="30">30s ago</option><option value="60">1 min ago</option><option value="120">2 min ago</option><option value="300">5 min ago</option></select></label>
+        <label>lasted <select name="duration_s"><option value="">?</option><option value="3">~3s</option><option value="10">~10s</option><option value="30">~30s</option><option value="60">~1 min</option><option value="300">5+ min</option></select></label>
+        <label>severity <select name="severity"><option value="">–</option><option>1</option><option>2</option><option value="3" selected>3</option><option>4</option><option>5</option></select></label>
+      </div>
+      <div class="row">
+        <label>app <select name="call_app"><option value="">–</option><option value="teams_desktop">Teams (desktop)</option><option value="teams_web">Teams (browser)</option><option value="google_meet">Google Meet</option><option value="zoom_desktop">Zoom (desktop)</option><option value="webex">Webex</option><option value="none">not a call</option></select></label>
+        <label>this computer on <select name="connection"><option value="">–</option><option value="wifi">Wi-Fi</option><option value="ethernet">Ethernet</option></select></label>
+      </div>
+      <input name="note" placeholder="what you saw, in your own words (no names, no addresses)" maxlength="500">
+      <div class="row">
+        <button type="submit" class="primary">Save mark</button>
+        <button type="button" id="ann-cancel">cancel</button>
+        <span class="muted">The timestamp was taken when you pressed the big button.</span>
+      </div>
+    </form>
+  </section>
+
+  <section class="grid">
+    <div class="card">
+      <h3>Latency <span class="muted" id="ping-legend"></span></h3>
+      <canvas id="c-ping" height="140"></canvas>
+      <div class="muted small">median per 5s · red ticks = loss · vertical lines = your marks</div>
+    </div>
+    <div class="card">
+      <h3>DOCSIS uncorrectables <span class="muted">Δ per poll, downstream</span></h3>
+      <canvas id="c-modem" height="140"></canvas>
+      <div class="muted small" id="modem-note"></div>
+    </div>
+    <div class="card">
+      <h3>Wi-Fi <span class="muted" id="wifi-now"></span></h3>
+      <canvas id="c-wifi" height="140"></canvas>
+      <div class="muted small" id="wifi-note"></div>
+    </div>
+    <div class="card wide" id="modem-card">
+      <div class="row between">
+        <h3>Your cable line <span class="muted" id="modem-state"></span></h3>
+        <span class="verdict" id="line-verdict"></span>
+      </div>
+      <div id="line-items" class="line-items"></div>
+      <div id="line-events"></div>
+      <details id="channel-details">
+        <summary class="muted">All channels (for engineers)</summary>
+        <p class="muted small">Colours use the same ranges as above. Counters are totals since the modem
+          last restarted — only their <i>increase</i> matters, which is what "Lost data" shows.</p>
+        <div id="channels"></div>
+      </details>
+    </div>
+  </section>
+
+  <section class="card">
+    <h3>Marks</h3>
+    <div id="anns"></div>
+  </section>
+
+  <section class="card" id="report" hidden>
+    <div class="row between">
+      <h3>Incident <span id="rep-id"></span></h3>
+      <div class="row" id="rep-exports"></div>
+    </div>
+    <div id="rep-body"></div>
+  </section>
+</main>
+
+<footer class="muted small">Local only (127.0.0.1). Read-only towards the modem; never authenticates. No audio, video or screen content is collected.</footer>
+<script src="/static/app.js"></script>
+</body>
+</html>
