@@ -60,6 +60,12 @@ note it for them.
 
 ## 4. Start it, and keep it running
 
+First check where the folder is. If it is under `~/Downloads`, `~/Desktop` or
+`~/Documents` (or iCloud Drive), move it to the home folder and continue from
+there: macOS privacy protection stops a login item from reading those folders,
+and the monitor then fails silently with "Operation not permitted" in
+`data/docsis-watch.log`.
+
 ```bash
 python3 autostart.py install
 ```

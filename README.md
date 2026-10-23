@@ -1,38 +1,138 @@
 # docsis-watch
 
-A small app that runs on your own computer, watches your cable internet line,
-and gives you one button to press the moment a call stutters. It lines that
-moment up with what the line, your Wi-Fi and your computer were doing, and
-produces a report an ISP engineer can act on.
+**Was that frozen video call your Wi-Fi, or your internet line?**
+docsis-watch tells you, in plain words, and gives you the measurements to
+prove it to your provider.
 
-It answers the question every "my internet is bad" complaint leaves open:
-**was it my house, or was it the line — and exactly when?**
+<p align="center">
+  <img src="docs/images/dashboard.png" width="720" alt="The docsis-watch dashboard: 'Your internet is working normally', a This Mac → Wi-Fi → Cable line → Internet status path, a green 'Something went wrong just now' button, and charts for response time, line errors and Wi-Fi signal">
+</p>
 
-- **Nothing to install.** Python 3.9+ standard library only. No pip, no Docker, no build step.
-- **Local only.** Binds to `127.0.0.1`. Uploads nothing; an export is a ZIP you hand over yourself.
-- **Read-only towards the modem, and it never logs in** ([why](#safety-and-privacy)).
-- **Keeps working when the internet is down** — that is when you need it.
+Calls freeze, sound drops out, and the helpdesk asks you to restart your router.
+By the time you call them, the problem is gone and nobody can say what it was.
 
-## Quick start
+docsis-watch runs quietly on your Mac and checks your connection every second.
+When a call goes wrong, you press one button. It lines that exact moment up
+with what your Wi-Fi, your cable modem and the wider internet were doing, and
+tells you where the problem was.
 
-```bash
-git clone https://github.com/Schweigmann/docsis-watch && cd docsis-watch
-python3 docsis_watch.py --demo --open   # look at it first, with synthetic data
-python3 docsis_watch.py --open          # the real thing: http://127.0.0.1:8787
-python3 -m unittest discover -s tests   # 40 tests
-```
+## What you get
 
-**Using Claude Code?** Tell it: *"Read SETUP-FOR-CLAUDE.md and set this up for me."*
+- **One sentence that says how your internet is doing right now**, and a simple
+  path (*This Mac → Wi-Fi → Cable line → Internet*) that turns amber or red
+  where something is wrong.
+- **One button for when it goes wrong.** Press it the moment a call stutters.
+  The time is saved instantly; you can add what happened afterwards.
+- **A plain answer for every problem you report**: inside your home, outside
+  your home, or nothing measurable. With the evidence behind it.
+- **A report you can send to your provider**, with the measurements an engineer
+  needs, and checked so it contains nothing private.
+- **Your cable line in plain language.** The numbers your modem reports, each
+  with what it means and what "good" looks like.
 
-Keep it running: `python3 autostart.py install` starts it now and at every login
-(macOS LaunchAgent / Linux systemd user unit, no sudo) and keeps a Mac awake
-while plugged in. `autostart.py status` / `uninstall` to check or remove.
-When something goes wrong: **press "Something went wrong just now" first,
-think second.** The time is saved when you press; details can follow.
+<p align="center">
+  <img src="docs/images/cable-line.png" width="720" alt="The 'Your cable line' section: each modem measurement with a green, amber or red dot, a plain explanation and the healthy range, plus recent messages from the modem">
+</p>
 
-`TESTPLAN.md` is a 30-minute first-run walkthrough.
+## Is it for me?
 
-## Reading the dashboard
+It's made for people on **cable internet** who use a **Mac** and have calls
+that freeze or drop. Linux works too. Windows isn't supported.
+
+You don't need to install anything: it uses only what macOS already has. It
+reads the most detail from **Sagemcom F3896** cable modems. With other modems
+it still tells you whether the problem was inside or outside your home; it just
+can't show the cable line card.
+
+## Get started (about 5 minutes)
+
+1. **Download it.** Click the green **Code** button on this page, then
+   **Download ZIP**. Unzip it and move the `docsis-watch-main` folder to your
+   **home folder** (the one with your name). Don't leave it in Downloads,
+   Desktop or Documents: macOS doesn't let background apps read those.
+   Or, if you use git, from your home folder:
+   ```bash
+   git clone https://github.com/Schweigmann/docsis-watch
+   ```
+2. **Start it.** Open the *Terminal* app and run:
+   ```bash
+   cd ~/docsis-watch-main     # or ~/docsis-watch if you used git
+   python3 autostart.py install
+   ```
+   It starts now and every time you log in, and restarts itself if it ever
+   stops. If your Mac asks to install "command line developer tools", click
+   *Install*, wait, and run the command again.
+3. **Open the dashboard** at **http://127.0.0.1:8787** and bookmark it.
+
+Want to look around first? `python3 docsis_watch.py --demo --open` shows the
+dashboard with made-up data.
+
+**Using Claude Code?** Open the folder and say: *"Read SETUP-FOR-CLAUDE.md and
+set this up for me."* It checks your Mac and your modem, starts the monitor and
+explains the dashboard.
+
+## When a call goes wrong
+
+1. **Press "Something went wrong just now" straight away.** The exact second
+   matters more than anything else.
+2. Pick what happened (video froze, sound dropped, call dropped…) and press *Save*.
+3. Read **What we found**:
+
+| What you see | What it means | What to do |
+|---|---|---|
+| **The problem was outside your home** | Your own router answered fine, but the internet beyond it didn't. | Contact your provider. Send them the *Summary* from the report. |
+| **The problem was inside your home** | Even your own router stopped answering properly. | Move closer to the router, try a network cable, or restart the router. |
+| **This Mac was overloaded** | The network was fine; your Mac was too busy. | Close heavy apps during calls. |
+| **Nothing we measure changed at that moment** | Your connection looked normal. | The call service itself may have had trouble. Keep reporting: a pattern over several days is still useful. |
+| **We can't tell what happened** | Nothing was being measured: the Mac was asleep, or the monitor was off. | Keep the Mac plugged in, with the lid open, during calls that matter. |
+
+## Tips for the best evidence
+
+- **Keep the Mac plugged in, with the lid open.** It stays awake on power, but
+  stops measuring when the lid is closed or it sleeps on battery.
+- **Report every problem, even small ones.** Three reports with the same answer
+  convince a helpdesk far more than one.
+- **A network cable gives the clearest picture.** On Wi-Fi, every measurement
+  includes your Wi-Fi; the app accounts for that, but a cable removes doubt.
+- **Several people on one Mac?** One monitor is enough. Open the same address
+  from any user account.
+
+## Your privacy
+
+- **Everything stays on your computer.** Nothing is uploaded. A report only
+  leaves when you send it yourself.
+- **It never logs in to your modem** and never changes a setting. It only reads
+  what the modem shows without a password.
+- **No audio, video, screen content or browsing is recorded.** It only measures
+  with small test messages it sends itself.
+- **Reports are checked before export**: no device serial numbers, hardware
+  addresses or other people's IP addresses.
+
+## Questions
+
+**Does it slow down my internet?** No. It sends three tiny test messages a
+second and never runs speed tests.
+
+**How do I stop or remove it?** `python3 autostart.py uninstall` stops it and
+removes it from login. Your measurements stay in the `data` folder; delete the
+folder to remove everything.
+
+**Is it running?** `python3 autostart.py status`, or just open the dashboard.
+The bottom of the page says whether all sensors are working.
+
+**Does it work with my modem?** See [Supported modems](#supported-modems). If
+yours isn't listed, everything except the cable line card still works.
+
+---
+
+# Technical details
+
+The rest of this page is for the technically curious and for developers.
+
+`python3 -m unittest discover -s tests` runs the 40 tests. `TESTPLAN.md` is a
+30-minute first-run walkthrough.
+
+## The dashboard in detail
 
 **The top line** answers "is my internet OK right now?" in one sentence, based
 on the last two minutes. Under it, four steps (*This Mac → Wi-Fi → Cable line →
@@ -117,7 +217,7 @@ fault-domain verdict, and the report says plainly that DOCSIS was unavailable.
 --demo               synthetic data; exports disabled
 ```
 
-## Safety and privacy
+## Safety and privacy, in detail
 
 - **Never authenticates to the modem.** Sagemcom gateways allow one admin
   session whose token does not expire until logout; a collector holding it locks
