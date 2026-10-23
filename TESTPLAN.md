@@ -8,7 +8,7 @@ order is chosen so the cheapest, most decisive checks come first.
 - Plug the Mac into **Ethernet** if you possibly can. If not, note it — every
   number you collect includes Wi-Fi noise, and the report will say so.
 - System Settings → General → Date & Time → *Set automatically* ON. Timestamps
-  that don't match Ziggo's CMTS logs make everything else worthless.
+  that don't match the provider's CMTS logs make everything else worthless.
 - Open Terminal:
   ```bash
   cd docsis-watch
@@ -23,8 +23,8 @@ order is chosen so the cheapest, most decisive checks come first.
 ```bash
 python3 docsis_watch.py --demo --open
 ```
-- Yellow banner, six green health chips, charts fill within ~30s.
-- Press **Problem now** → form appears *below the button only after pressing*.
+- Yellow banner, "All 6 sensors working" at the bottom, charts fill within ~30s.
+- Press **Something went wrong just now** → form appears *below the button only after pressing*.
   Save a mark → an incident report opens with findings.
 - After ~90s a synthetic episode occurs; mark it and the report should say
   *Access line / DOCSIS impairment — confidence high*.
@@ -38,7 +38,7 @@ your network yet. Ctrl-C to stop.
 ```bash
 python3 docsis_watch.py --open
 ```
-Watch the health chips top-right. Within about 30 seconds you will know:
+Open "sensors working" at the bottom of the page. Within about 30 seconds you will know:
 
 | Chip | Green means | Red — hover it, then |
 |---|---|---|
@@ -82,7 +82,7 @@ value like 405 means a unit bug. Corrected counters should creep up over minutes
 - Open the report. Read the *Not available* section before the findings — it
   tells you what the analysis could not see.
 
-## 5. Export one report and read it as Ziggo would (5 min)
+## 5. Export one report and read it as your provider would (5 min)
 
 Click `bundle.zip`. If it refuses, the message names what it found (a MAC in
 your note, most likely) — fix the note, retry. Open `incident-summary.md` and ask:

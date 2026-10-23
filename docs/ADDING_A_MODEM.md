@@ -1,7 +1,7 @@
 # Adding support for a modem
 
 docsis-watch reads one modem family today (Sagemcom's `/rest/v1/cablemodem/*`
-API, as shipped by Ziggo). Every other modem needs someone who owns one. This
+API, as shipped by several cable providers). Every other modem needs someone who owns one. This
 is the path from "unknown hardware" to "supported", and the plan for how
 detection scales once there are several.
 

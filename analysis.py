@@ -220,9 +220,9 @@ def event_findings(events):
 
 
 # ---------------------------------------------------------------- line health (plain language)
-# "Out of range" limits are the ha-ziggo-modem defaults for Ziggo Sagemcom modems
+# "Out of range" limits follow community-documented defaults for Sagemcom cable modems
 # (DS power -10..+10 dBmV, DS SNR >= 34 dB, US power <= 52 dBmV); "good" is
-# those minus a margin. Rules of thumb for a dashboard, not a Ziggo spec.
+# those minus a margin. Rules of thumb for a dashboard, not a provider spec.
 LIMITS = {
     "ds_power": {"good": (-7, 7), "ok": (-10, 10), "unit": "dBmV", "good_txt": "−7 to +7 dBmV"},
     "ds_snr":   {"good": (37, None), "ok": (34, None), "unit": "dB", "good_txt": "37 dB or more"},
@@ -251,14 +251,14 @@ def _worst(grades):
 
 
 EVENT_PLAIN = [  # (pattern, plain words, status)
-    (re.compile(r"T4 time-?out", re.I), "Lost contact with Ziggo and had to reconnect (T4)", "bad"),
+    (re.compile(r"T4 time-?out", re.I), "Lost contact with your provider and had to reconnect (T4)", "bad"),
     (re.compile(r"T3 time-?out", re.I), "Upload request went unanswered (T3)", "watch"),
     (re.compile(r"SYNC Timing|Lost MDD|Loss of", re.I), "Lost the download signal", "bad"),
     (re.compile(r"Reboot because of - (.+)$|Resetting", re.I), "Modem restarted", "watch"),
     (re.compile(r"profile assignment change", re.I),
-     "Ziggo switched the upload modulation (line quality changed)", "watch"),
+     "Your provider switched the upload modulation (line quality changed)", "watch"),
     (re.compile(r"DHCP", re.I), "IP address renewal warning (usually harmless)", "good"),
-    (re.compile(r"REGISTRATION COMPLETE|Operational", re.I), "Modem (re)connected to Ziggo", "good"),
+    (re.compile(r"REGISTRATION COMPLETE|Operational", re.I), "Modem (re)connected to your provider", "good"),
 ]
 
 
@@ -305,7 +305,7 @@ def line_health(store, now):
                   "value": f"{lo} to {hi} dBmV" if lo is not None else "not reported",
                   "status": _worst([grade(lo, "us_power"), grade(hi, "us_power")]),
                   "good": LIMITS["us_power"]["good_txt"],
-                  "meaning": "How hard your modem has to 'shout' to reach Ziggo. Near the maximum means a weak return path."})
+                  "meaning": "How hard your modem has to 'shout' to reach your provider. Near the maximum means a weak return path."})
 
     # Counters over the last hour (or since the app started, if that's shorter).
     window = store.channels(now - 60 * MIN, now + 1)
@@ -330,7 +330,7 @@ def line_health(store, now):
                   "meaning": "Data the modem received but could not repair. Corrected errors are normal; "
                              "uncorrectable ones mean glitches you can notice."})
     items.append({"key": "timeouts", "label": "Upload timeouts", "value": to_v, "status": to_s, "good": "0",
-                  "meaning": "The modem asked Ziggo for upload time and got no answer. A T4 means it lost "
+                  "meaning": "The modem asked your provider for upload time and got no answer. A T4 means it lost "
                              "contact and had to reconnect."})
     locked = [c for c in latest if str(c["lock_status"]).lower() in ("true", "1", "locked")]
     items.append({"key": "lock", "label": "Channels connected",
@@ -372,7 +372,7 @@ def wifi_findings(base_rows, during_rows):
     if disc:
         out.append(_f("Wi-Fi disconnected during the incident", "high",
                       [f"{len(disc)} sample(s) with no association"], [], [],
-                      "This alone explains a frozen call. Not a Ziggo issue.", layer="wifi"))
+                      "This alone explains a frozen call. Not a provider issue.", layer="wifi"))
     ev = []
     if rb is not None and rd is not None and rd < rb - 8:
         ev.append(f"RSSI {rb:.0f}→{rd:.0f} dBm")
@@ -449,7 +449,7 @@ def analyse(store, ann):
     elif domain == "lan_wifi_gateway":
         findings.append(_f("Fault at or before the gateway — Wi-Fi, LAN or the gateway itself",
                            "medium", [f"nearest hop {gw_name} degraded: {'; '.join(why)}"],
-                           [], [], "Not a Ziggo access-line report. Check Wi-Fi findings.", layer="probes"))
+                           [], [], "Not an access-line problem. Check Wi-Fi findings.", layer="probes"))
     elif domain == "single_destination":
         findings.append(_f(label, "medium", why, [], [],
                            "Single-destination degradation is routing or the far end.", layer="probes"))

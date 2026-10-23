@@ -1,7 +1,7 @@
 """
 Read-only DOCSIS modem adapter with capability discovery.
 
-Primary target: Sagemcom F3896LG-ZG (Ziggo "SmartWifi"). Its
+Primary target: Sagemcom F3896 (all-in-one cable modem/router). Its
 /rest/v1/cablemodem/* resources are served WITHOUT authentication, and the
 device allows exactly ONE authenticated session — so this adapter never logs
 in. A held session would lock the owner out of their own modem UI, and the
@@ -20,7 +20,7 @@ SC-QAM/ATDMA power and snr are plain dBmV / dB, but OFDM power + rxMer and
 OFDMA power are integers in TENTHS (OFDMA 405 next to ATDMA 45.3). A locked
 OFDM channel reporting rxMer 0 means "not reported", not 0 dB.
 
-Behind a Ziggo router (gateway on 192.168.178.1) the REST paths answer over
+In router mode (gateway on 192.168.178.1) the REST paths answer over
 HTTPS; over plain HTTP the larger bodies time out. `state` needs login (401);
 `state_` serves the same object unauthenticated.
 

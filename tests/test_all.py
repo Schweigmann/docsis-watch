@@ -267,7 +267,7 @@ def _fix(name):
 
 
 class LiveF3896(unittest.TestCase):
-    """Redacted bodies captured unauthenticated from a live Ziggo F3896 over
+    """Redacted bodies captured unauthenticated from a live F3896 over
     HTTPS on 2026-10-02 — the real shapes, not guessed ones."""
 
     def test_downstream(self):

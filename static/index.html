@@ -7,91 +7,119 @@
 <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-<div id="demo-banner" hidden>DEMO — synthetic data. Nothing here is a measurement, and exports are disabled.</div>
+<div id="demo-banner" hidden>Demo mode: these numbers are made up, and exports are switched off.</div>
 
-<header>
-  <div class="brand">docsis-watch <span id="uptime" class="muted"></span></div>
-  <div id="health" class="health"></div>
-</header>
+<div class="page">
+  <header class="top">
+    <span class="wordmark">docsis-watch</span>
+    <span class="muted" id="clock"></span>
+  </header>
 
-<main>
-  <section class="mark">
-    <button id="problem-now" class="big">Problem now</button>
+  <section class="hero">
+    <h1 id="headline">Checking your connection…</h1>
+    <p class="lede" id="subline">Based on the last two minutes of measurements.</p>
+
+    <ol class="path" id="path">
+      <li data-node="mac"><span class="node"></span><span class="name">This Mac</span><span class="state"></span></li>
+      <li data-node="local"><span class="node"></span><span class="name">Wi-Fi</span><span class="state"></span></li>
+      <li data-node="line"><span class="node"></span><span class="name">Cable line</span><span class="state"></span></li>
+      <li data-node="net"><span class="node"></span><span class="name">Internet</span><span class="state"></span></li>
+    </ol>
+  </section>
+
+  <section class="report-problem">
+    <button id="problem-now" class="primary-action">Something went wrong just now</button>
+    <p class="hint" id="problem-hint">Press it the moment a call stutters or drops. The time is saved straight away; details are optional.</p>
+
     <form id="ann-form" hidden>
-      <div class="chips" id="cats">
-        <label><input type="radio" name="category" value="video_freeze" checked> video froze</label>
-        <label><input type="radio" name="category" value="audio_dropout"> audio dropped</label>
-        <label><input type="radio" name="category" value="robot_voice"> robot voice</label>
-        <label><input type="radio" name="category" value="call_dropped"> call dropped</label>
-        <label><input type="radio" name="category" value="slow_web"> websites slow</label>
-        <label><input type="radio" name="category" value="total_outage"> no internet</label>
-        <label><input type="radio" name="category" value="other"> other</label>
+      <fieldset>
+        <legend>What happened?</legend>
+        <div class="choices" id="cats">
+          <label><input type="radio" name="category" value="video_freeze" checked> Video froze</label>
+          <label><input type="radio" name="category" value="audio_dropout"> Sound dropped</label>
+          <label><input type="radio" name="category" value="robot_voice"> Robot voice</label>
+          <label><input type="radio" name="category" value="call_dropped"> Call dropped</label>
+          <label><input type="radio" name="category" value="slow_web"> Websites slow</label>
+          <label><input type="radio" name="category" value="total_outage"> No internet</label>
+          <label><input type="radio" name="category" value="other"> Something else</label>
+        </div>
+      </fieldset>
+      <div class="fields">
+        <label>It started <select name="ago_s"><option value="0">just now</option><option value="15">15 seconds ago</option><option value="30">30 seconds ago</option><option value="60">1 minute ago</option><option value="120">2 minutes ago</option><option value="300">5 minutes ago</option></select></label>
+        <label>It lasted <select name="duration_s"><option value="">not sure</option><option value="3">a few seconds</option><option value="10">about 10 seconds</option><option value="30">about 30 seconds</option><option value="60">about a minute</option><option value="300">5 minutes or more</option></select></label>
+        <label>How bad <select name="severity"><option value="">not sure</option><option value="1">barely noticed</option><option value="2">annoying</option><option value="3" selected>disruptive</option><option value="4">had to rejoin</option><option value="5">unusable</option></select></label>
+        <label>During <select name="call_app"><option value="">not sure</option><option value="teams_desktop">Teams app</option><option value="teams_web">Teams in the browser</option><option value="google_meet">Google Meet</option><option value="zoom_desktop">Zoom</option><option value="webex">Webex</option><option value="none">not a call</option></select></label>
+        <label>Connected by <select name="connection"><option value="">not sure</option><option value="wifi">Wi-Fi</option><option value="ethernet">cable</option></select></label>
       </div>
-      <div class="row">
-        <label>started <select name="ago_s"><option value="0">just now</option><option value="15">15s ago</option><option value="30">30s ago</option><option value="60">1 min ago</option><option value="120">2 min ago</option><option value="300">5 min ago</option></select></label>
-        <label>lasted <select name="duration_s"><option value="">?</option><option value="3">~3s</option><option value="10">~10s</option><option value="30">~30s</option><option value="60">~1 min</option><option value="300">5+ min</option></select></label>
-        <label>severity <select name="severity"><option value="">–</option><option>1</option><option>2</option><option value="3" selected>3</option><option>4</option><option>5</option></select></label>
-      </div>
-      <div class="row">
-        <label>app <select name="call_app"><option value="">–</option><option value="teams_desktop">Teams (desktop)</option><option value="teams_web">Teams (browser)</option><option value="google_meet">Google Meet</option><option value="zoom_desktop">Zoom (desktop)</option><option value="webex">Webex</option><option value="none">not a call</option></select></label>
-        <label>this computer on <select name="connection"><option value="">–</option><option value="wifi">Wi-Fi</option><option value="ethernet">Ethernet</option></select></label>
-      </div>
-      <input name="note" placeholder="what you saw, in your own words (no names, no addresses)" maxlength="500">
-      <div class="row">
-        <button type="submit" class="primary">Save mark</button>
-        <button type="button" id="ann-cancel">cancel</button>
-        <span class="muted">The timestamp was taken when you pressed the big button.</span>
+      <label class="note">In your own words <span class="muted">(optional, no names or addresses)</span>
+        <input name="note" maxlength="500" placeholder="e.g. everyone froze, then I was dropped from the call">
+      </label>
+      <div class="actions">
+        <button type="submit" class="primary-action small">Save</button>
+        <button type="button" class="quiet" id="ann-cancel">Cancel</button>
       </div>
     </form>
   </section>
 
-  <section class="grid">
-    <div class="card">
-      <h3>Latency <span class="muted" id="ping-legend"></span></h3>
-      <canvas id="c-ping" height="140"></canvas>
-      <div class="muted small">median per 5s · red ticks = loss · vertical lines = your marks</div>
-    </div>
-    <div class="card">
-      <h3>DOCSIS uncorrectables <span class="muted">Δ per poll, downstream</span></h3>
-      <canvas id="c-modem" height="140"></canvas>
-      <div class="muted small" id="modem-note"></div>
-    </div>
-    <div class="card">
-      <h3>Wi-Fi <span class="muted" id="wifi-now"></span></h3>
-      <canvas id="c-wifi" height="140"></canvas>
-      <div class="muted small" id="wifi-note"></div>
-    </div>
-    <div class="card wide" id="modem-card">
-      <div class="row between">
-        <h3>Your cable line <span class="muted" id="modem-state"></span></h3>
-        <span class="verdict" id="line-verdict"></span>
+  <section class="block">
+    <div class="block-head">
+      <h2>Recent history</h2>
+      <div class="range" id="range" role="group" aria-label="Time range">
+        <button data-min="15" class="on">15 min</button><button data-min="60">1 hour</button><button data-min="360">6 hours</button>
       </div>
-      <div id="line-items" class="line-items"></div>
-      <div id="line-events"></div>
-      <details id="channel-details">
-        <summary class="muted">All channels (for engineers)</summary>
-        <p class="muted small">Colours use the same ranges as above. Counters are totals since the modem
-          last restarted — only their <i>increase</i> matters, which is what "Lost data" shows.</p>
-        <div id="channels"></div>
-      </details>
     </div>
+    <div class="trend">
+      <div class="trend-label"><h3>Response time</h3><div class="big-num" id="now-ping">–</div><div class="legend" id="ping-legend"></div></div>
+      <canvas id="c-ping" height="120"></canvas>
+    </div>
+    <div class="trend">
+      <div class="trend-label"><h3>Line errors</h3><div class="big-num" id="now-modem">–</div><div class="legend" id="modem-note"></div></div>
+      <canvas id="c-modem" height="80"></canvas>
+    </div>
+    <div class="trend">
+      <div class="trend-label"><h3 id="wifi-title">Wi-Fi signal</h3><div class="big-num" id="now-wifi">–</div><div class="legend" id="wifi-now"></div></div>
+      <canvas id="c-wifi" height="80"></canvas>
+    </div>
+    <p class="footnote">Dashed lines are moments you reported. Red ticks mean a request got no answer.</p>
   </section>
 
-  <section class="card">
-    <h3>Marks</h3>
+  <section class="block">
+    <div class="block-head">
+      <h2>Your cable line <span class="muted" id="modem-state"></span></h2>
+      <span class="verdict" id="line-verdict"></span>
+    </div>
+    <div id="line-items" class="line-items"></div>
+    <div id="line-events"></div>
+    <details id="channel-details">
+      <summary>Details for engineers</summary>
+      <p class="footnote">Colours use the same ranges as above. Counters are totals since the modem
+        last restarted; only their increase matters, which is what "Lost data" shows.</p>
+      <div id="channels"></div>
+      <p class="footnote" id="wifi-note"></p>
+    </details>
+  </section>
+
+  <section class="block">
+    <div class="block-head"><h2>Your reports</h2></div>
     <div id="anns"></div>
   </section>
 
-  <section class="card" id="report" hidden>
-    <div class="row between">
-      <h3>Incident <span id="rep-id"></span></h3>
-      <div class="row" id="rep-exports"></div>
+  <section class="block" id="report" hidden>
+    <div class="block-head">
+      <h2>What we found <span class="muted" id="rep-id"></span></h2>
+      <div class="exports" id="rep-exports"></div>
     </div>
     <div id="rep-body"></div>
   </section>
-</main>
 
-<footer class="muted small">Local only (127.0.0.1). Read-only towards the modem; never authenticates. No audio, video or screen content is collected.</footer>
+  <footer>
+    <details>
+      <summary id="sensors">Checking sensors…</summary>
+      <div id="health" class="health"></div>
+    </details>
+    <p>Everything stays on this Mac. It only reads from your modem and never logs in. No audio, video or screen content is collected.</p>
+  </footer>
+</div>
 <script src="/static/app.js"></script>
 </body>
 </html>

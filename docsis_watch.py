@@ -112,7 +112,7 @@ def main():
         gw = ping.default_gateway()
         targets = a.targets or [t for t in (gw, "1.1.1.1", "8.8.8.8") if t]
         targets = list(dict.fromkeys(targets))
-        # An all-in-one Ziggo gateway serves the DOCSIS resources on its LAN
+        # An all-in-one cable gateway serves the DOCSIS resources on its LAN
         # address over HTTPS (plain HTTP times out on the larger bodies), so
         # try that first; a bridged modem answers on 192.168.100.1.
         gw_hosts = [f"https://{gw}", f"http://{gw}"] if gw and gw != "192.168.100.1" else []

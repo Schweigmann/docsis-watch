@@ -3,10 +3,10 @@
 Encoded here so nobody has to re-learn it. Verify anything marked ⚠️ against
 the actual hardware before trusting it.
 
-## The modem (Ziggo)
+## The modem
 
-- Current Ziggo CPE: **Sagemcom F3896LG-ZG** ("SmartWifi modem", black). DOCSIS **3.1**.
-- ⚠️ Other modems (older Ziggo hardware, DOCSIS 4.0 equipment, other ISPs) may
+- Reference modem: **Sagemcom F3896** (black all-in-one cable modem/router). DOCSIS **3.1**.
+- ⚠️ Other modems (older hardware, DOCSIS 4.0 equipment, other ISPs) may
   serve different endpoints or none. Run `discover()` and look at `/api/status →
   modem.tried` before assuming any endpoint below applies.
 - Management IP `192.168.100.1` in bridge mode. In router mode, use the

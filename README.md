@@ -1,7 +1,7 @@
 # docsis-watch
 
 A small app that runs on your own computer, watches your cable internet line,
-and gives you one big button to press the moment a call stutters. It lines that
+and gives you one button to press the moment a call stutters. It lines that
 moment up with what the line, your Wi-Fi and your computer were doing, and
 produces a report an ISP engineer can act on.
 
@@ -27,46 +27,61 @@ python3 -m unittest discover -s tests   # 40 tests
 Keep it running: `python3 autostart.py install` starts it now and at every login
 (macOS LaunchAgent / Linux systemd user unit, no sudo) and keeps a Mac awake
 while plugged in. `autostart.py status` / `uninstall` to check or remove.
-When something goes wrong: **press "Problem now" first, think second.** The
-timestamp is taken when you press; category and notes can follow.
+When something goes wrong: **press "Something went wrong just now" first,
+think second.** The time is saved when you press; details can follow.
 
 `TESTPLAN.md` is a 30-minute first-run walkthrough.
 
 ## Reading the dashboard
 
-**Health chips (top right)** — one per data source. Green = collecting. Red =
-hover it for the reason. `modem` is only green when the channel tables are
-actually being read.
+**The top line** answers "is my internet OK right now?" in one sentence, based
+on the last two minutes. Under it, four steps (*This Mac → Wi-Fi → Cable line →
+Internet*) turn green, amber or red, so you can see *where* something is wrong.
 
-**"Your cable line"** — the modem's numbers in words. One verdict
+**"Something went wrong just now"**: press it the moment a call stutters. The
+time is saved on the press; what happened, how long and in which app can follow.
+
+**Recent history**: response time (to your own router and to two internet
+services), line errors (data the modem could not repair) and Wi-Fi signal, on
+one shared timeline (15 min / 1 hour / 6 hours). Dashed lines are your reports;
+red ticks are pings that got no answer.
+
+**Your cable line**: the modem's numbers in words. One verdict
 (*Line looks healthy* / *keep an eye on …* / *Problem on the line: …*), then:
 
 | Row | What it tells you | Good |
 |---|---|---|
 | Signal strength (download) | How strong the signal arrives. Too weak *and* too strong cause errors. | −7 to +7 dBmV |
 | Signal quality (download) | Signal vs. background noise (SNR/MER). Higher is better. | ≥ 37 dB |
-| Transmit power (upload) | How hard the modem must "shout" to reach the ISP. | 35 to 48 dBmV |
-| Lost data (download) | Uncorrectable errors **added in the last hour** — glitches you notice. | under 10 |
+| Transmit power (upload) | How hard the modem must "shout" to reach the provider. | 35 to 48 dBmV |
+| Lost data (download) | Uncorrectable errors **added in the last hour**: glitches you notice. | under 10 |
 | Upload timeouts | T3 = an upload request went unanswered. T4 = the modem had to reconnect. | 0 |
 | Channels connected | The line is a bundle of channels; a dropped one is lost capacity. | all |
 | Restarts (last 7 days) | From the modem's own log. | 0 |
 
 Modem counters are totals since its last restart (billions of *corrected*
 errors is normal). Only the **increase** matters, which is what the card and the
-reports show. Limits are rules of thumb (the "out of range" ones match
-[ha-ziggo-modem](https://github.com/dkwolf1/ha-ziggo-modem)'s defaults), not an
-ISP specification; they live in `analysis.LIMITS`.
+reports show. Limits are rules of thumb (in line with community-documented
+defaults for Sagemcom cable modems), not a provider specification; they live in
+`analysis.LIMITS`. The raw channel tables are under *Details for engineers*.
 
-**Incident report** (click a mark) — findings with evidence, contradictions and
-a confidence. Read *Not available* first: it lists what the analysis could not
-see. Confidence is `high` only when two independent layers agree.
+**What we found** (click one of *Your reports*): a plain answer first, then the
+evidence. Read *Not measured this time* too: it lists what the analysis could
+not see. The technical verdict and confidence are in small print, and the
+exports keep that wording because they are meant for the provider's engineers.
+Confidence is `high` only when two independent layers agree.
 
-| Verdict | Meaning |
-|---|---|
-| Access line / DOCSIS impairment | Gateway stayed clean, the internet beyond it degraded, and the modem agrees. Worth reporting to the ISP. |
-| Local: Wi-Fi / LAN / gateway | The path to your own router degraded. Not the ISP's line. |
-| The computer, not the network | CPU was saturated. |
-| Not corroborated | Nothing measured moved. Still a valid observation — it just isn't evidence. |
+| On screen | Technical verdict | Meaning |
+|---|---|---|
+| The problem was outside your home | Access line / DOCSIS impairment | Your router stayed clean, the internet beyond it degraded. Worth reporting to your provider. |
+| The problem was inside your home | Local: Wi-Fi / LAN / gateway | The path to your own router degraded. Not the provider's line. |
+| This Mac was overloaded | The computer, not the network | CPU was saturated. |
+| Nothing we measure changed at that moment | Not corroborated | Nothing measured moved. Still a valid observation; it just isn't evidence. |
+| We can't tell what happened | No conclusion possible: measurement gap | The Mac was asleep or the monitor wasn't running. |
+
+**Sensors**: the bottom of the page says *All 6 sensors working*. Open it to see
+each data source; hover a red one for the reason. The modem only counts as
+working when its channel tables are actually being read.
 
 ## What it collects
 
@@ -85,7 +100,7 @@ off-net degraded places the fault beyond it. Always keep the gateway as a target
 
 | Modem | Status | Notes |
 |---|---|---|
-| Sagemcom F3896LG-ZG (Ziggo SmartWifi, DOCSIS 3.1), router mode | ✅ verified on hardware, 2026-10 | Served on the gateway's LAN address over HTTPS, no login. Channels, T3/T4, event log, uptime. |
+| Sagemcom F3896 (DOCSIS 3.1), router mode | ✅ verified on hardware, 2026-10 | Served on the gateway's LAN address over HTTPS, no login. Channels, T3/T4, event log, uptime. |
 | Sagemcom F3896 family in bridge mode (`192.168.100.1`) | ⚠️ expected to work, not verified | Same API. |
 | Anything else | ❓ unknown | Run `python3 probe_modem.py <modem-ip>` and see `docs/ADDING_A_MODEM.md`. |
 

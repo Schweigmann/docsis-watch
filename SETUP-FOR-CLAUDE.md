@@ -11,7 +11,7 @@ Read `CLAUDE.md` first if you need background: it has the modem quirks and analy
 - **No sudo, no pip, no Homebrew.** It is Python standard library only. If
   something seems to need an install, stop and tell the person.
 - **Never log in to the modem**, and never send a request to it other than what
-  the app and `probe_modem.py` already do. Ziggo modems allow one admin session;
+  the app and `probe_modem.py` already do. These modems allow one admin session;
   holding it locks the owner out of their own modem.
 - **Nothing leaves the computer.** Don't upload the database, logs or probe
   output anywhere. The only thing meant to be shared is an incident export (step 7).
@@ -35,7 +35,7 @@ python3 -m unittest discover -s tests               # all tests must pass
 route -n get default 2>/dev/null | grep -E 'gateway|interface' || ip route show default
 ```
 
-Note the gateway IP (Ziggo router-mode is usually `192.168.178.1`) and the
+Note the gateway IP (often `192.168.178.1` or `192.168.0.1`) and the
 interface. Tell the person: on Wi-Fi, every number includes their Wi-Fi; the
 report separates "my house" from "the line" by comparing the gateway with the
 internet, so that still works, but a cable gives cleaner evidence.
@@ -55,7 +55,7 @@ the *Supported modems* table in `README.md`:
   give a verdict; the report will say DOCSIS was unavailable. Mention
   `docs/ADDING_A_MODEM.md` if they want to help add their modem.
 
-Ask the person which Ziggo modem they have (model sticker on the bottom) and
+Ask the person which modem they have (model sticker on the bottom) and
 note it for them.
 
 ## 4. Start it, and keep it running
@@ -85,11 +85,11 @@ curl -s http://127.0.0.1:8787/api/status | python3 -c "import json,sys; [print(h
 
 ## 6. Tell the person how to use it (keep it short)
 
-1. **When a call stutters or drops: press "Problem now" immediately**, then fill
+1. **When a call stutters or drops: press "Something went wrong just now" immediately**, then fill
    in what happened. The exact second matters more than anything else.
 2. Leave the laptop plugged in with the lid open during calls you care about.
-3. Click a mark on the dashboard to see the incident report. *Access line* means
-   Ziggo's side; *Local* means their own Wi-Fi/router; *Not corroborated* means
+3. Click a report under "Your reports" to see what was found. *Outside your home* means
+   their provider's side; *Inside your home* means their own Wi-Fi/router; *Nothing we measure changed* means
    nothing measured moved.
 4. `python3 autostart.py status` checks it is running;
    `python3 autostart.py uninstall` removes it (data stays).
@@ -112,5 +112,5 @@ When they come back with "I had a drop at <time>":
      (use `/usr/bin/log` in zsh)
    - Call start/end from Chrome/Edge (Teams on the web):
      `pmset -g log | grep "WebRTC has active PeerConnections"`
-5. To share with Ziggo or the project: the incident's export (`summary.md`,
+5. To share with their provider: the incident's export (`summary.md`,
    `bundle.zip`) from the report page. It is redaction-checked. Never share the raw database.

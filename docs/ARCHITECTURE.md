@@ -4,11 +4,11 @@ One process, standard library only. Four collector threads write to SQLite; an
 HTTP server reads from it. Nothing talks to anything except through the store.
 
 ```
- ping ─┐                                   ┌─ GET /api/status ──── live card + chips (SSE /events)
+ ping ─┐                                   ┌─ GET /api/status ──── live status + sensors (SSE /events)
  modem ─┼─► store.py (SQLite, WAL) ◄─ analysis.py ◄─┼─ GET /api/series ──── charts
  wifi ─┤        ▲                          ├─ GET /api/incidents/N ─ incident report
  host ─┘        └── POST /api/annotations  └─ …/summary.md · data.json · bundle.zip (export.py)
-                    ("Problem now")
+                    ("Something went wrong")
 ```
 
 ## The pieces
